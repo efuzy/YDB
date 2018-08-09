@@ -339,7 +339,7 @@ void	iosocket_tls(mval *optionmval, int4 msec_timeout, mval *tlsid, mval *passwo
 				{
 					sys_get_curr_time(&cur_time);
 					cur_time = sub_abs_time(&end_time, &cur_time);
-					if (0 >= cur_time.at_sec)
+					if (0 >= cur_time.tv_sec)
 					{	/* no more time */
 						gtm_tls_session_close((gtm_tls_socket_t **)&socketptr->tlssocket);
 						socketptr->tlsenabled = FALSE;
@@ -349,11 +349,11 @@ void	iosocket_tls(mval *optionmval, int4 msec_timeout, mval *tlsid, mval *passwo
 					} else
 					{	/* adjust msec_timeout for poll/select */
 #					ifdef	USE_POLL
-						msec_timeout = (cur_time.at_sec * MILLISECS_IN_SEC) +
-							DIVIDE_ROUND_UP(cur_time.at_usec, MICROSECS_IN_MSEC);
+						msec_timeout = (cur_time.tv_sec * MILLISECS_IN_SEC) +
+							DIVIDE_ROUND_UP(cur_time.tv_nsec, NANOSECS_IN_MSEC);
 #					else
-						timeout_spec.tv_sec = cur_time.at_sec;
-						timeout_spec.tv_usec = (gtm_tv_usec_t)cur_time.at_usec;
+						timeout_spec.tv_sec = cur_time.tv_sec;
+						timeout_spec.tv_usec = (gtm_tv_usec_t)cur_time.tv_nsec;
 #					endif
 					}
 				} else if (0 == msec_timeout)

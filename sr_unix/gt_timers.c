@@ -314,12 +314,10 @@ void sys_get_curr_time(ABS_TIME *atp)
 	/* Note: This function is called from timer_handler and so needs to be async-signal safe.
 	 * POSIX defines "clock_gettime" as safe but not "gettimeofday" so dont use the latter.
 	 */
-	clock_gettime(CLOCK_REALTIME, &elp_time);
-	atp->at_sec = (int4)elp_time.tv_sec;
-	atp->at_usec = (int4)elp_time.tv_nsec / 1000;
+	clock_gettime(CLOCK_REALTIME, atp);
 #	else
-	atp->at_sec = time((int4 *) 0);
-	atp->at_usec = 0;
+	atp->tv_sec = time((int4 *) 0);
+	atp->tv_nsec = 0;
 #	endif
 }
 
@@ -498,9 +496,9 @@ STATICFNDEF void start_timer_int(TID tid, int4 time_to_expir, void (*handler)(),
 	DUMP_TIMER_INFO("After invoking add_timer()");
 	if ((timeroot->tid == tid) || !timer_active
 			|| (timer_active
-				&& ((newt->expir_time.at_sec < sys_timer_at.at_sec)
-					|| ((newt->expir_time.at_sec == sys_timer_at.at_sec)
-						&& ((gtm_tv_usec_t)newt->expir_time.at_usec < sys_timer_at.at_usec)))))
+				&& ((newt->expir_time.tv_sec < sys_timer_at.tv_sec)
+					|| ((newt->expir_time.tv_sec == sys_timer_at.tv_sec)
+						&& ((gtm_tv_usec_t)newt->expir_time.tv_nsec < sys_timer_at.tv_nsec)))))
 		start_first_timer(&at);
 }
 
@@ -574,8 +572,8 @@ STATICFNDEF void sys_settimer(TID tid, ABS_TIME *time_to_expir)
 #	ifdef BSD_TIMER
 	if (in_setitimer_error)
 		return;
-	sys_timer.it_value.tv_sec = time_to_expir->at_sec;
-	sys_timer.it_value.tv_usec = (gtm_tv_usec_t)time_to_expir->at_usec;
+	sys_timer.it_value.tv_sec = time_to_expir->tv_sec;
+	sys_timer.it_value.tv_usec = (gtm_tv_usec_t)(time_to_expir->tv_nsec / NANOSECS_IN_MSEC);
 	sys_timer.it_interval.tv_sec = sys_timer.it_interval.tv_usec = 0;
 	assert(1000000 > sys_timer.it_value.tv_usec);
 	if ((-1 == setitimer(ITIMER_REAL, &sys_timer, &old_sys_timer)) || WBTEST_ENABLED(WBTEST_SETITIMER_ERROR))
@@ -583,10 +581,10 @@ STATICFNDEF void sys_settimer(TID tid, ABS_TIME *time_to_expir)
 		REPORT_SETITIMER_ERROR("ITIMER_REAL", sys_timer, TRUE, errno);
 	}
 #	else
-	if (time_to_expir->at_sec == 0)
+	if (time_to_expir->tv_sec == 0)
 		alarm((unsigned)1);
 	else
-		alarm(time_to_expir->at_sec);
+		alarm(time_to_expir->tv_sec);
 #	endif
 	timer_active = TRUE;
 }
@@ -608,7 +606,7 @@ STATICFNDEF void start_first_timer(ABS_TIME *curr_time)
 	for (tpop = (GT_TIMER *)timeroot ; tpop ; tpop = tpop->next)
 	{
 		eltime = sub_abs_time((ABS_TIME *)&tpop->expir_time, curr_time);
-		if ((0 > eltime.at_sec) || ((0 == eltime.at_sec) && (0 == eltime.at_usec)))
+		if ((0 > eltime.tv_sec) || ((0 == eltime.tv_sec) && (0 == eltime.tv_nsec)))
 		{	/* Timer has expired. Handle safe timers, defer unsafe timers. */
 			if (tpop->safe || (SAFE_FOR_TIMER_START && (1 > timer_stack_count)
 						&& !(TREF(in_ext_call) && (wcs_stale_fptr == tpop->handler))))
@@ -708,8 +706,8 @@ STATICFNDEF void timer_handler(int why)
 	if (safe_for_timer_pop)
 		in_nondeferrable_signal_handler = IN_TIMER_HANDLER;
 	/* Allow a base 50 seconds of lateness for safe timers */
-	late_time.at_sec = 50;
-	late_time.at_usec = 0;
+	late_time.tv_sec = 50;
+	late_time.tv_nsec = 0;
 #	endif
 	while (tpop)					/* fire all handlers that expired */
 	{
@@ -771,12 +769,12 @@ STATICFNDEF void timer_handler(int why)
 					 * Otherwise, a hung unsafe timer could cause a subsequent safe timer to be overdue.
 					 */
 					rel_time = sub_abs_time(&at, &old_at);
-					late_time.at_sec += rel_time.at_sec;
-					late_time.at_usec += rel_time.at_usec;
-					if (late_time.at_usec > MICROSECS_IN_SEC)
+					late_time.tv_sec += rel_time.tv_sec;
+					late_time.tv_nsec += rel_time.tv_nsec;
+					if (late_time.tv_nsec > NANOSECS_IN_SEC)
 					{
-						late_time.at_sec++;
-						late_time.at_usec -= MICROSECS_IN_SEC;
+						late_time.tv_sec++;
+						late_time.tv_nsec -= NANOSECS_IN_SEC;
 					}
 #					endif
 				}
@@ -946,8 +944,8 @@ STATICFNDEF GT_TIMER *add_timer(ABS_TIME *atp, TID tid, int4 time_to_expir, void
 	if (0 < hdata_len)
 		memcpy(ntp->hd_data, hdata, hdata_len);
 	add_int_to_abs_time(atp, time_to_expir, &ntp->expir_time);
-	ntp->start_time.at_sec = atp->at_sec;
-	ntp->start_time.at_usec = atp->at_usec;
+	ntp->start_time.tv_sec = atp->tv_sec;
+	ntp->start_time.tv_nsec = atp->tv_nsec;
 	tp = (GT_TIMER *)timeroot;
 	tpp = NULL;
 	while (tp)

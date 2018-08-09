@@ -143,7 +143,7 @@ boolean_t iosocket_wait(io_desc *iod, int4 msec_timeout)
 				mv_zintdev->mv_st_cont.mvs_zintdev.io_ptr = NULL;
 			}
 			zint_restart = TRUE;
-			DBGSOCK((stdout, "socwait: mv_stent found - endtime: %d/%d\n", end_time.at_sec, end_time.at_usec));
+			DBGSOCK((stdout, "socwait: mv_stent found - endtime: %d/%d\n", end_time.tv_sec, end_time.tv_nsec / NANOSECS_IN_MSEC));
 		} else
 			DBGSOCK((stdout, "socwait: no mv_stent found !!\n"));
 		dsocketptr->mupintr = FALSE;
@@ -227,9 +227,9 @@ boolean_t iosocket_wait(io_desc *iod, int4 msec_timeout)
 					*/
 					DBGSOCK((stdout, "socwait: Taking timeout end time from wait restart data\n"));
 					cur_time = sub_abs_time(&end_time, &cur_time);
-					msec_timeout = (int4)(cur_time.at_sec * MILLISECS_IN_SEC +
+					msec_timeout = (int4)(cur_time.tv_sec * MILLISECS_IN_SEC +
 						/* Round up in order to prevent premature timeouts */
-						DIVIDE_ROUND_UP(cur_time.at_usec, MICROSECS_IN_MSEC));
+						DIVIDE_ROUND_UP(cur_time.tv_nsec, MICROSECS_IN_MSEC));
 					if (0 > msec_timeout)
 					{
 						msec_timeout = -1;
@@ -237,8 +237,8 @@ boolean_t iosocket_wait(io_desc *iod, int4 msec_timeout)
 						utimeout.tv_usec = 0;
 					} else
 					{
-						utimeout.tv_sec = cur_time.at_sec;
-						utimeout.tv_usec = (gtm_tv_usec_t)cur_time.at_usec;
+						utimeout.tv_sec = cur_time.tv_sec;
+						utimeout.tv_usec = (gtm_tv_usec_t)cur_time.tv_nsec;
 					}
 				}
 			}
@@ -285,7 +285,7 @@ boolean_t iosocket_wait(io_desc *iod, int4 msec_timeout)
 							dsocketptr->mupintr = TRUE;
 							socketus_interruptus++;
 							DBGSOCK((stdout, "socwait: mv_stent queued - endtime: %d/%d"
-								"  interrupts: %d\n", end_time.at_sec, end_time.at_usec,
+								"  interrupts: %d\n", end_time.tv_sec, end_time.tv_nsec,
 								socketus_interruptus));
 						}
 						REVERT_GTMIO_CH(&iod->pair, ch_set);
@@ -297,16 +297,16 @@ boolean_t iosocket_wait(io_desc *iod, int4 msec_timeout)
 					{
 						sys_get_curr_time(&cur_time);
 						cur_time = sub_abs_time(&end_time, &cur_time);
-						msec_timeout = (int4)(cur_time.at_sec * MILLISECS_IN_SEC +
+						msec_timeout = (int4)(cur_time.tv_sec * MILLISECS_IN_SEC +
 							/* Round up in order to prevent premature timeouts */
-							DIVIDE_ROUND_UP(cur_time.at_usec, MICROSECS_IN_MSEC));
+							DIVIDE_ROUND_UP(cur_time.tv_nsec, MICROSECS_IN_MSEC));
 						if (0 >msec_timeout)
 						{
 							rv = 0;		/* time out */
 							break;
 						}
-						utimeout.tv_sec = cur_time.at_sec;
-						utimeout.tv_usec = (gtm_tv_usec_t)cur_time.at_usec;
+						utimeout.tv_sec = cur_time.tv_sec;
+						utimeout.tv_usec = (gtm_tv_usec_t)cur_time.tv_nsec;
 					}
 				} else
 					break;	/* either other error or done */

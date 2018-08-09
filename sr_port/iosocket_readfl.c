@@ -266,8 +266,8 @@ int	iosocket_readfl(mval *v, int4 width, int4 msec_timeout)
 		DBGSOCK((stdout, "socrfl: .. mv_stent found - bytes_read: %d  chars_read: %d  max_bufflen: %d"
 			 "  interrupts: %d\n", bytes_read, chars_read, max_bufflen, socketus_interruptus));
 		DBGSOCK((stdout, "socrfl: .. msec_timeout: %d\n", msec_timeout));
-		DBGSOCK_ONLY2(if (sockintr->end_time_valid) DBGSOCK((stdout, "socrfl: .. endtime: %d/%d\n", end_time.at_sec,
-								     end_time.at_usec)));
+		DBGSOCK_ONLY2(if (sockintr->end_time_valid) DBGSOCK((stdout, "socrfl: .. endtime: %d/%d\n", end_time.tv_sec,
+								     end_time.tv_nsec / NANOSECS_IN_MSEC)));
 		DBGSOCK((stdout, "socrfl: .. buffer address: 0x"lvaddr"  stringpool: 0x"lvaddr"\n",
 			 buffer_start, stringpool.free));
 		if (!IS_AT_END_OF_STRINGPOOL(buffer_start, bytes_read))
@@ -327,14 +327,14 @@ int	iosocket_readfl(mval *v, int4 width, int4 msec_timeout)
 			do_delim_conv = TRUE;
 	}
 	need_get_chset = FALSE;		/* if we change ichset, make sure converter available */
-	time_for_read.at_sec  = 0;
+	time_for_read.tv_sec  = 0;
 	if (0 == msec_timeout)
-		time_for_read.at_usec = 0;
+		time_for_read.tv_nsec = 0;
 	else
-		time_for_read.at_usec = (socketptr->def_moreread_timeout ? socketptr->moreread_timeout : INITIAL_MOREREAD_TIMEOUT)
+		time_for_read.tv_nsec = (socketptr->def_moreread_timeout ? socketptr->moreread_timeout : INITIAL_MOREREAD_TIMEOUT)
 					* MICROSECS_IN_MSEC;
 	DBGSOCK((stdout, "socrfl: moreread_timeout = %d def_moreread_timeout= %d time = %d \n",
-		 socketptr->moreread_timeout, socketptr->def_moreread_timeout, time_for_read.at_usec));
+		 socketptr->moreread_timeout, socketptr->def_moreread_timeout, time_for_read.tv_nsec));
 	timer_id = (TID)iosocket_readfl;
 	out_of_time = FALSE;
 	if (NO_M_TIMEOUT == msec_timeout)
@@ -376,8 +376,8 @@ int	iosocket_readfl(mval *v, int4 width, int4 msec_timeout)
 				 */
 			 	end_time = sockintr->end_time;	 /* Restore end_time for timeout */
 				cur_time = sub_abs_time(&end_time, &cur_time);
-				msec_timeout = (int4)(cur_time.at_sec * MILLISECS_IN_SEC +
-						DIVIDE_ROUND_UP(cur_time.at_usec, MICROSECS_IN_MSEC));
+				msec_timeout = (int4)(cur_time.tv_sec * MILLISECS_IN_SEC +
+						DIVIDE_ROUND_UP(cur_time.tv_nsec, MICROSECS_IN_MSEC));
 				if (0 >= msec_timeout)
 				{
 					msec_timeout = -1;
@@ -533,9 +533,9 @@ int	iosocket_readfl(mval *v, int4 width, int4 msec_timeout)
 			{
 				one_read_done = TRUE;
 				DBGSOCK((stdout, "socrfl: before moreread_timeout = %d timeout = %d \n",
-					 socketptr->moreread_timeout, time_for_read.at_usec));
-				time_for_read.at_usec = DEFAULT_MOREREAD_TIMEOUT * MICROSECS_IN_MSEC;
-				DBGSOCK((stdout, "socrfl: after timeout = %d \n", time_for_read.at_usec));
+					 socketptr->moreread_timeout, time_for_read.tv_nsec));
+				time_for_read.tv_nsec = DEFAULT_MOREREAD_TIMEOUT * MICROSECS_IN_MSEC;
+				DBGSOCK((stdout, "socrfl: after timeout = %d \n", time_for_read.tv_nsec));
 			}
 			DBGSOCK((stdout, "socrfl: Bytes read: %d\n", status));
 			bytes_read += (int)status;
@@ -782,7 +782,7 @@ int	iosocket_readfl(mval *v, int4 width, int4 msec_timeout)
 			{
 				sys_get_curr_time(&cur_time);
 				cur_time = sub_abs_time(&end_time, &cur_time);
-				if (0 > cur_time.at_sec)
+				if (0 > cur_time.tv_sec)
 				{
 					out_of_time = TRUE;
 					cancel_timer(timer_id);
@@ -852,7 +852,7 @@ int	iosocket_readfl(mval *v, int4 width, int4 msec_timeout)
 			 "interrupts: %d  buffer_start: 0x"lvaddr"\n",
 			 bytes_read, chars_read, max_bufflen, socketus_interruptus, stringpool.free));
 		DBGSOCK_ONLY(if (sockintr->end_time_valid) DBGSOCK((stdout, "socrfl: .. endtime: %d/%d  msec_timeout: %d\n",
-								    end_time.at_sec, end_time.at_usec, msec_timeout)));
+								    end_time.tv_sec, end_time.tv_nsec, msec_timeout)));
 		TRCTBL_ENTRY(SOCKRFL_OUTOFBAND, bytes_read, (INTPTR_T)chars_read, stringpool.free, NULL);	/* BYPASSOK */
 		REVERT_GTMIO_CH(&iod->pair, ch_set);
 		outofband_action(FALSE);

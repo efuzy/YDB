@@ -30,16 +30,7 @@ typedef void (*timer_hndlr)();	/* Timer handler type */
  * the ABS_TIME format, and from then on, all
  * timer related code uses this format.
  */
-typedef struct tag_abs_time
-{
-#ifndef __osf__
-	long	at_sec;		/* seconds */
-	long	at_usec;	/* and microseconds */
-#else	/* avoid  8 byte alignment issues */
-	intszofptr_t	at_sec;		/* seconds */
-	intszofptr_t	at_usec;	/* and microseconds */
-#endif
-} ABS_TIME;
+typedef struct timespec ABS_TIME;
 
 #include <sys/time.h>
 
@@ -190,11 +181,11 @@ MBSTART {									\
 		FPRINTF(stderr, "  - timer #%d:\n"						\
 			"      handler:    %s\n"						\
 			"      safe:       %d\n"						\
-			"      start_time: [at_sec: %ld; at_usec: %ld]\n"			\
-			"      expir_time: [at_sec: %ld; at_usec: %ld]\n",			\
+			"      start_time: [tv_sec: %ld; tv_nsec: %ld]\n"			\
+			"      expir_time: [tv_sec: %ld; tv_nsec: %ld]\n",			\
 			i, handler, cur_timer->safe,						\
-			cur_timer->start_time.at_sec, cur_timer->start_time.at_usec,		\
-			cur_timer->expir_time.at_sec, cur_timer->expir_time.at_usec);		\
+			cur_timer->start_time.tv_sec, cur_timer->start_time.tv_nsec,		\
+			cur_timer->expir_time.tv_sec, cur_timer->expir_time.tv_nsec);		\
 		FFLUSH(stderr);									\
 		cur_timer = cur_timer->next;							\
 		i++;										\
