@@ -573,7 +573,7 @@ STATICFNDEF void sys_settimer(TID tid, ABS_TIME *time_to_expir)
 	if (in_setitimer_error)
 		return;
 	sys_timer.it_value.tv_sec = time_to_expir->tv_sec;
-	sys_timer.it_value.tv_usec = (gtm_tv_usec_t)(time_to_expir->tv_nsec / NANOSECS_IN_MSEC);
+	sys_timer.it_value.tv_usec = (gtm_tv_usec_t)(time_to_expir->tv_nsec / NANOSECS_IN_USEC);
 	sys_timer.it_interval.tv_sec = sys_timer.it_interval.tv_usec = 0;
 	assert(1000000 > sys_timer.it_value.tv_usec);
 	if ((-1 == setitimer(ITIMER_REAL, &sys_timer, &old_sys_timer)) || WBTEST_ENABLED(WBTEST_SETITIMER_ERROR))

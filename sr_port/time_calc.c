@@ -80,7 +80,7 @@ void	add_int_to_abs_time(ABS_TIME *atps, int4 ival,ABS_TIME *atpd)
 	if ((atpd->tv_nsec = atps->tv_nsec + ival_usec) >= NANOSECS_IN_MSEC)
 	{
 		/* microsecond overflow */
-		atpd->tv_nsec -= NANOSECS_IN_MSEC;
+		atpd->tv_nsec -= NANOSECS_IN_SEC;
 		atpd->tv_sec  += 1;		/* carry */
 	}
 }
@@ -110,7 +110,7 @@ ABS_TIME	sub_abs_time(ABS_TIME *atp1, ABS_TIME *atp2)
 
 	if (atp2->tv_nsec > atp1->tv_nsec)
 	{
-		dat.tv_nsec += NANOSECS_IN_MSEC;
+		dat.tv_nsec += NANOSECS_IN_SEC;
 		dat.tv_sec--;
 	}
 	return (dat);
