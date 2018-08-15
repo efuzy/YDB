@@ -52,7 +52,7 @@ int4	abs_time_comp(ABS_TIME *atp1, ABS_TIME *atp2)
 /*
  * ---------------------------------------------------------------------
  * Add integer to absolute time
- *	Absolute time structure is seconds & microseconds.
+ *	Absolute time structure is seconds & nanoseconds.
  *	Integer value is in milliseconds.
  *
  * Arguments:
@@ -77,7 +77,7 @@ void	add_int_to_abs_time(ABS_TIME *atps, int4 ival,ABS_TIME *atpd)
 	ival_sec  = ival / MILLISECS_IN_SEC;					/* milliseconds -> seconds */
 	ival_usec = (ival - (ival_sec * MILLISECS_IN_SEC)) * MICROSECS_IN_MSEC;	/* microsecond remainder */
 	atpd->tv_sec = atps->tv_sec + ival_sec;
-	if ((atpd->tv_nsec = atps->tv_nsec + ival_usec) >= NANOSECS_IN_MSEC)
+	if ((atpd->tv_nsec = atps->tv_nsec + (ival_usec * NANOSECS_IN_USEC)) >= NANOSECS_IN_SEC)
 	{
 		/* microsecond overflow */
 		atpd->tv_nsec -= NANOSECS_IN_SEC;

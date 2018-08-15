@@ -1151,7 +1151,7 @@ int	iott_readfl(mval *v, int4 length, int4 msec_timeout)	/* timeout in milliseco
 				break;
 			}
 			input_timeval.tv_sec = cur_time.tv_sec;
-			input_timeval.tv_usec = (gtm_tv_usec_t)cur_time.tv_nsec;
+			input_timeval.tv_usec = (gtm_tv_usec_t)cur_time.tv_nsec / NANOSECS_IN_USEC;
 		}
 	} while (outlen < length);
 	*zb_ptr++ = 0;

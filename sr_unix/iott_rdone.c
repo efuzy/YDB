@@ -226,7 +226,7 @@ int	iott_rdone (mint *v, int4 msec_timeout)	/* timeout in milliseconds */
 						break;
 					}
 					input_timeval.tv_sec = cur_time.tv_sec;
-					input_timeval.tv_usec = (gtm_tv_usec_t)cur_time.tv_nsec;
+					input_timeval.tv_usec = (gtm_tv_usec_t)cur_time.tv_nsec / NANOSECS_IN_USEC;
 				}
 			} else
 			{	/* This is an untimed read. We had set the select timeout to be 100 seconds by default. But since

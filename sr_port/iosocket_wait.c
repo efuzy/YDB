@@ -229,7 +229,7 @@ boolean_t iosocket_wait(io_desc *iod, int4 msec_timeout)
 					cur_time = sub_abs_time(&end_time, &cur_time);
 					msec_timeout = (int4)(cur_time.tv_sec * MILLISECS_IN_SEC +
 						/* Round up in order to prevent premature timeouts */
-						DIVIDE_ROUND_UP(cur_time.tv_nsec, MICROSECS_IN_MSEC));
+						DIVIDE_ROUND_UP(cur_time.tv_nsec, NANOSECS_IN_MSEC));
 					if (0 > msec_timeout)
 					{
 						msec_timeout = -1;
@@ -238,7 +238,7 @@ boolean_t iosocket_wait(io_desc *iod, int4 msec_timeout)
 					} else
 					{
 						utimeout.tv_sec = cur_time.tv_sec;
-						utimeout.tv_usec = (gtm_tv_usec_t)cur_time.tv_nsec;
+						utimeout.tv_usec = (gtm_tv_usec_t)cur_time.tv_nsec / NANOSECS_IN_USEC;
 					}
 				}
 			}
@@ -285,7 +285,7 @@ boolean_t iosocket_wait(io_desc *iod, int4 msec_timeout)
 							dsocketptr->mupintr = TRUE;
 							socketus_interruptus++;
 							DBGSOCK((stdout, "socwait: mv_stent queued - endtime: %d/%d"
-								"  interrupts: %d\n", end_time.tv_sec, end_time.tv_nsec,
+								"  interrupts: %d\n", end_time.tv_sec, end_time.tv_nsec / NANOSECS_IN_USEC,
 								socketus_interruptus));
 						}
 						REVERT_GTMIO_CH(&iod->pair, ch_set);
@@ -299,14 +299,14 @@ boolean_t iosocket_wait(io_desc *iod, int4 msec_timeout)
 						cur_time = sub_abs_time(&end_time, &cur_time);
 						msec_timeout = (int4)(cur_time.tv_sec * MILLISECS_IN_SEC +
 							/* Round up in order to prevent premature timeouts */
-							DIVIDE_ROUND_UP(cur_time.tv_nsec, MICROSECS_IN_MSEC));
+							DIVIDE_ROUND_UP(cur_time.tv_nsec, NANOSECS_IN_MSEC));
 						if (0 >msec_timeout)
 						{
 							rv = 0;		/* time out */
 							break;
 						}
 						utimeout.tv_sec = cur_time.tv_sec;
-						utimeout.tv_usec = (gtm_tv_usec_t)cur_time.tv_nsec;
+						utimeout.tv_usec = (gtm_tv_usec_t)cur_time.tv_nsec / NANOSECS_IN_USEC;
 					}
 				} else
 					break;	/* either other error or done */

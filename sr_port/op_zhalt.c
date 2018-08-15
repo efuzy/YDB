@@ -50,7 +50,7 @@ LITREF	gtmImageName	gtmImageNames[];
 STATICDEF	ABS_TIME	halt_time;
 STATICDEF	ABS_TIME	zhalt_time;
 
-#define		SAFE_INTERVAL	500000000		/* microseconds */
+#define		SAFE_INTERVAL	500000000		/* nanoseconds */
 
 error_def(ERR_PROCTERM);
 error_def(ERR_RESTRICTEDOP);

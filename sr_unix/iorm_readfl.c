@@ -405,7 +405,7 @@ int	iorm_readfl (mval *v, int4 width, int4 msec_timeout) /* timeout in milliseco
 				  "  interrupts: %d\n", bytes_read, exp_width, TREF(pipefifo_interrupt)); DEBUGPIPEFLUSH);
 		PIPE_DEBUG(PRINTF("piperfl: .. timeout: %d\n", msec_timeout); DEBUGPIPEFLUSH);
 		PIPE_DEBUG(if (pipeintr->end_time_valid) PRINTF("piperfl: .. endtime: %d/%d\n", end_time.tv_sec,
-								end_time.tv_nsec); DEBUGPIPEFLUSH);
+								end_time.tv_nsec / NANOSECS_IN_USEC); DEBUGPIPEFLUSH);
 		PIPE_DEBUG(PRINTF("piperfl: .. buffer address: 0x%08lx  stringpool: 0x%08lx\n",
 				  buffer_start, stringpool.free); DEBUGPIPEFLUSH);
 		PIPE_DEBUG(PRINTF("buffer_start =%s\n", buffer_start); DEBUGPIPEFLUSH);

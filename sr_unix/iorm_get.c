@@ -191,7 +191,7 @@ int	iorm_get_bom_fol(io_desc *io_ptr, int4 *tot_bytes_read, int4 *msec_timeout, 
 					*bom_timeout = TRUE;
 				} else
 					*msec_timeout = (int4)(time_left.tv_sec * MILLISECS_IN_SEC +
-							       DIVIDE_ROUND_UP(time_left.tv_nsec, MICROSECS_IN_MSEC));
+							       DIVIDE_ROUND_UP(time_left.tv_nsec, NANOSECS_IN_MSEC));
 
 				/* make sure it terminates with bom_timeout */
 				if ((!*bom_timeout) && (!*msec_timeout))
@@ -350,7 +350,7 @@ int	iorm_get_fol(io_desc *io_ptr, int4 *tot_bytes_read, int4 *msec_timeout, bool
 					*follow_timeout = TRUE;
 				} else
 					*msec_timeout = (int4)(time_left.tv_sec * MILLISECS_IN_SEC +
-							       DIVIDE_ROUND_UP(time_left.tv_nsec, MICROSECS_IN_MSEC));
+							       DIVIDE_ROUND_UP(time_left.tv_nsec, NANOSECS_IN_MSEC));
 				/* make sure it terminates with follow_timeout */
 				if (!*follow_timeout && !*msec_timeout) *msec_timeout = 1;
 				sleep_left = *msec_timeout;
@@ -395,7 +395,7 @@ int	iorm_get_fol(io_desc *io_ptr, int4 *tot_bytes_read, int4 *msec_timeout, bool
 						*follow_timeout = TRUE;
 					} else
 						*msec_timeout = (int4)(time_left.tv_sec * MILLISECS_IN_SEC +
-								       DIVIDE_ROUND_UP(time_left.tv_nsec, MICROSECS_IN_MSEC));
+								       DIVIDE_ROUND_UP(time_left.tv_nsec, NANOSECS_IN_MSEC));
 
 					/* make sure it terminates with follow_timeout */
 					if (!*follow_timeout && !*msec_timeout) *msec_timeout = 1;
