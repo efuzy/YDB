@@ -86,7 +86,7 @@ RUN apt-get update -yq && apt-get upgrade -yq && \
 
 RUN  mkdir ~/node-latest-install && cd $_ && \
      wget -qO- http://nodejs.org/dist/node-latest.tar.gz | tar xz --strip-components=1 && \
-     ./configure --prefix=~/$MODULES && \
+     ./configure --directory /usr/local  && \
      make install && \ 
      wget -qO- https://www.npmjs.org/install.sh | sh
 
@@ -99,4 +99,5 @@ ENV gtmdir=/data \
     LANG=en_US.UTF-8 \
     LANGUAGE=en_US:en \
     LC_ALL=en_US.UTF-8
+    
 ENTRYPOINT ["/opt/yottadb/current/ydb"]
