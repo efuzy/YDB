@@ -84,9 +84,9 @@ RUN cd /tmp/yottadb-release  \
 RUN apt-get update -yq && apt-get upgrade -yq && \
     apt-get install -yq g++ libssl-dev apache2-utils curl git python make nano
 
-RUN  mkdir ~/node-latest-install && cd $_ && \
+RUN  mkdir /usr/local/node && cd $_ && \
      wget -qO- http://nodejs.org/dist/node-latest.tar.gz | tar xz --strip-components=1 && \
-     ./configure --directory /usr/local  && \
+     ./configure --prefix=/usr/local && \
      make install && \ 
      wget -qO- https://www.npmjs.org/install.sh | sh
 
