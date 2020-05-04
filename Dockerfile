@@ -104,8 +104,7 @@ RUN  mkdir /usr/local/libhugetlbfs && cd $_ && \
      make install PREFIX=/usr/local
 
 RUN echo gid >/proc/sys/vm/hugetlb_shm_group
-
-
+ 
 
 ENV gtmdir=/data \
     LANG=en_US.UTF-8 \
@@ -115,5 +114,5 @@ ENV gtmdir=/data \
     HUGETLB_MORECORE=yes \
     LD_PRELOAD=libhugetlbfs.so \
     HUGETLB_VERBOSE=0 
-    
+
 ENTRYPOINT ["/opt/yottadb/current/ydb"]
