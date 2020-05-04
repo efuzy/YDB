@@ -90,10 +90,8 @@ RUN  mkdir /usr/local/node && cd $_ && \
      make install && \ 
      wget -qO- https://www.npmjs.org/install.sh | sh
 
-RUN npm install -g yo grunt-cli bower express
+RUN npm install -g express -g @quasar/cli
 
-RUN which node; node -v; which npm; npm -v; \
-RUN npm ls -g --depth=0
 
 ENV gtmdir=/data \
     LANG=en_US.UTF-8 \
