@@ -4,12 +4,12 @@ Pull an image with binaries built from the latest source code:
 ```
 docker pull efuzy/fuz:latest
 ```
-### or Build 
+### or Build One
 ```
 docker build -t efuzy/fuz:latest .
 ```
 
-## Run it
+## Then Run it
 ```
 docker run -it -v /db:/data --network=host efuzy/fuz:latest
 ```
