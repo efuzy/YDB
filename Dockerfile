@@ -82,7 +82,7 @@ RUN cd /tmp/yottadb-release  \
  && ./ydbinstall \
       --utf8 `cat /tmp/yottadb-release/.icu.vsn` \
       --installdir /opt/yottadb/current \
-      --force-install
+      --force-install \
  && rm -rf /tmp/yottadb-release
 
 COPY database.gde /data/database.gde
