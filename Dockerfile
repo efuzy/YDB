@@ -17,12 +17,9 @@
 #
 # Use with data persistence:
 #   $ docker run --rm -e ydb_chset=utf-8 -v `pwd`/ydb-data:/data -ti yottadb/yottadb:latest
-
 ARG OS_VSN=18.04
-
 # Stage 1: YottaDB build image
 FROM ubuntu:${OS_VSN} as ydb-release-builder
-
 ARG CMAKE_BUILD_TYPE=Release
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
@@ -41,7 +38,6 @@ RUN apt-get update && \
                     zlib1g-dev \
                     && \
     apt-get clean
-
 ADD . /tmp/yottadb-src
 RUN mkdir -p /tmp/yottadb-build \
  && cd /tmp/yottadb-build \
@@ -85,6 +81,19 @@ RUN cd /tmp/yottadb-release  \
       --force-install \
  && rm -rf /tmp/yottadb-release
 
+RUN apt-get update -yq && apt-get upgrade -yq && \
+    apt-get install -yq g++ libssl-dev apache2-utils curl git python make nano
+
+RUN  mkdir ~/node-latest-install && cd $_ && \
+     wget -qO- http://nodejs.org/dist/node-latest.tar.gz | tar xz --strip-components=1 && \
+     ./configure --prefix=~/$MODULES && \
+     make install && \ 
+     wget -qO- https://www.npmjs.org/install.sh | sh
+
+RUN npm install -g yo grunt-cli bower express
+
+RUN which node; node -v; which npm; npm -v; \
+RUN npm ls -g --depth=0
 
 ENV gtmdir=/data \
     LANG=en_US.UTF-8 \
