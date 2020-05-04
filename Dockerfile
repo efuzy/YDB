@@ -93,9 +93,27 @@ RUN  mkdir /usr/local/node && cd $_ && \
 RUN npm install -g @quasar/cli
 
 
+RUN apt install apt-file  && \
+    apt-file update && \
+    apt-get install -y libcap2-bin
+RUN  setcap 'cap_ipc_lock+ep' /opt/yottadb/current/ydb
+RUN  mkdir /usr/local/libhugetlbfs && cd $_ && \
+     wget -qO- https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/libhugetlbfs/2.22-1/libhugetlbfs_2.22.orig.tar.gz | tar xz --strip-components=1 && \
+     make && \
+     make check && \
+     make install PREFIX=/usr/local
+
+RUN echo gid >/proc/sys/vm/hugetlb_shm_group
+
+
+
 ENV gtmdir=/data \
     LANG=en_US.UTF-8 \
     LANGUAGE=en_US:en \
-    LC_ALL=en_US.UTF-8
+    LC_ALL=en_US.UTF-8 \
+    HUGETLB_SHM=yes \
+    HUGETLB_MORECORE=yes \
+    LD_PRELOAD=libhugetlbfs.so \
+    HUGETLB_VERBOSE=0 
     
 ENTRYPOINT ["/opt/yottadb/current/ydb"]
