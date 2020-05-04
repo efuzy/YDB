@@ -4,7 +4,7 @@ Pull an image with binaries built from the latest source code:
 ```
 docker pull efuzy/fuz:latest
 ```
-### or Build One
+### Or Build One
 ```
 docker build -t efuzy/fuz:latest .
 ```
