@@ -82,7 +82,17 @@ RUN cd /tmp/yottadb-release  \
  && ./ydbinstall \
       --utf8 `cat /tmp/yottadb-release/.icu.vsn` \
       --installdir /opt/yottadb/current \
+      --force-install
  && rm -rf /tmp/yottadb-release
+
+COPY database.gde /data/database.gde
+RUN  /opt/yottadb/current/ydb/ydb -run ^GDE < database.gde
+RUN /opt/yottadb/current/ydb/mupip create
+
+RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash && \
+	. $HOME/.nvm/nvm.sh && \
+    nvm install --lts
+
 ENV gtmdir=/data \
     LANG=en_US.UTF-8 \
     LANGUAGE=en_US:en \
