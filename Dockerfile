@@ -90,7 +90,7 @@ RUN  mkdir /usr/local/node && cd $_ && \
      make install && \ 
      wget -qO- https://www.npmjs.org/install.sh | sh
 
-RUN npm install -g express -g @quasar/cli
+RUN npm install -g @quasar/cli
 
 
 ENV gtmdir=/data \
