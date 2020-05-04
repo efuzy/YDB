@@ -1,13 +1,4 @@
 ### Build Steps
-1) Build the image
-   ```
-   docker build -t efuzy/fuz:latest .
-   ```
-2) Run the created image
-   ```
-   docker run --rm  efuzy/fuz:latest
-   ```
-### Build Steps
 Docker Hub has prebuilt YottaDB images. You must have at least docker 17.05.
 Pull an image with binaries built from the latest source code:
 
