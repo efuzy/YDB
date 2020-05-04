@@ -86,8 +86,6 @@ RUN cd /tmp/yottadb-release  \
  && rm -rf /tmp/yottadb-release
 
 
-RUN wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
-
 ENV gtmdir=/data \
     LANG=en_US.UTF-8 \
     LANGUAGE=en_US:en \
