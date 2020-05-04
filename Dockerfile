@@ -86,8 +86,8 @@ RUN cd /tmp/yottadb-release  \
  && rm -rf /tmp/yottadb-release
 
 COPY database.gde /data/database.gde
-RUN  /opt/yottadb/current/ydb/ydb -run ^GDE < database.gde
-RUN /opt/yottadb/current/ydb/mupip create
+RUN  /opt/yottadb/current/ydb -run ^GDE < /data/database.gde
+RUN /opt/yottadb/current/mupip create
 
 RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash && \
 	. $HOME/.nvm/nvm.sh && \
