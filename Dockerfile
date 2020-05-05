@@ -66,16 +66,37 @@ RUN cd /tmp/yottadb-release  \
       --utf8 `cat /tmp/yottadb-release/.icu.vsn` \
       --installdir /opt/yottadb/current \
       --force-install \
+<<<<<<< HEAD
  && rm -rf /tmp/yottadb-release \
  && echo gid >/proc/sys/vm/hugetlb_shm_group
+=======
+ && rm -rf /tmp/yottadb-release
+
+RUN apt-get update -yq && apt-get upgrade -yq && \
+    apt-get install -yq g++ libssl-dev apache2-utils curl git python make nano
+
+RUN  mkdir /usr/local/node && cd $_ && \
+     wget -qO- http://nodejs.org/dist/node-latest.tar.gz | tar xz --strip-components=1 && \
+     ./configure --prefix=/usr/local && \
+     make install && \ 
+     wget -qO- https://www.npmjs.org/install.sh | sh
+
+RUN npm install -g @quasar/cli
+
+>>>>>>> parent of 1dac846d... .
 
 ENV gtmdir=/data \
     LANG=en_US.UTF-8 \
     LANGUAGE=en_US:en \
+<<<<<<< HEAD
     LC_ALL=en_US.UTF-8 \
     HUGETLB_SHM=yes \
     HUGETLB_MORECORE=yes \
     LD_PRELOAD=libhugetlbfs.so \
     HUGETLB_VERBOSE=0 
 
+=======
+    LC_ALL=en_US.UTF-8
+    
+>>>>>>> parent of 1dac846d... .
 ENTRYPOINT ["/opt/yottadb/current/ydb"]
