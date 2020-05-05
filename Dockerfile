@@ -83,11 +83,15 @@ RUN  mkdir /usr/local/node && cd $_ && \
 
 RUN npm install -g @quasar/cli
 
+<<<<<<< HEAD
+>>>>>>> parent of 1dac846d... .
+=======
 >>>>>>> parent of 1dac846d... .
 
 ENV gtmdir=/data \
     LANG=en_US.UTF-8 \
     LANGUAGE=en_US:en \
+<<<<<<< HEAD
 <<<<<<< HEAD
     LC_ALL=en_US.UTF-8 \
     HUGETLB_SHM=yes \
@@ -96,6 +100,8 @@ ENV gtmdir=/data \
     HUGETLB_VERBOSE=0 
 
 =======
+=======
+>>>>>>> parent of 1dac846d... .
     LC_ALL=en_US.UTF-8
     
 >>>>>>> parent of 1dac846d... .
