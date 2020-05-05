@@ -11,7 +11,7 @@ docker build -t efuzy/fuz:latest .
 ```
 ## Then Run it
 ```
-docker run -it -v /db:/data --network=host -e ydb_chset=utf-8 --name=fuz efuzy/fuz:latest
+docker run -it -v /db:/data --network=host -e ydb_chset=utf-8  --restart unless-stopped --name=fuz efuzy/fuz:latest
 ```
 
 ```
