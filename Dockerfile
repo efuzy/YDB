@@ -1,5 +1,5 @@
 ARG OS_VSN=18.04
-FROM ubuntu:${OS_VSN} as ydb-release-builder
+FROM ubuntu:${OS_VSN}
 ARG CMAKE_BUILD_TYPE=Release
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
@@ -30,9 +30,8 @@ RUN apt-get update && \
                     python \
                     make \
                     nano \
-                    apt-utils --no-install-recommends  \
-                    && \
-                    mkdir /usr/local/node && cd $_ && \
+                    apt-utils --no-install-recommends
+RUN                 mkdir /usr/local/node && cd $_ && \
                     wget -qO- http://nodejs.org/dist/node-latest.tar.gz | tar xz --strip-components=1 && \
                     ./configure --prefix=/usr/local && \
                     make install && \ 
@@ -53,26 +52,12 @@ RUN mkdir -p /tmp/yottadb-build \
       -D CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} \
       /tmp/yottadb-src \
  && make -j $(nproc) \
- && make install
-# Stage 2: YottaDB release image
-FROM ubuntu:${OS_VSN} as ydb-release
-ARG DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && \
-    apt-get install -y \
-                    file \
-                    binutils \
-                    libelf-dev \
-                    libicu-dev \
-                    locales \
-                    wget \
-                    vim \
-                    && \
-    apt-get clean
+ && make install 
+
 RUN locale-gen en_US.UTF-8
 WORKDIR /data
-#COPY --from=ydb-release-builder /tmp/yottadb-release /tmp/yottadb-release
-RUN cd /tmp/yottadb-release  \
- && pkg-config --modversion icu-io \
+RUN  cd /tmp/yottadb-release  \
+   && pkg-config --modversion icu-io \
       > /tmp/yottadb-release/.icu.vsn \
  && ./ydbinstall \
       --utf8 `cat /tmp/yottadb-release/.icu.vsn` \
