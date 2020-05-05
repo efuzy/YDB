@@ -37,13 +37,8 @@ RUN apt-get update && \
                     ./configure --prefix=/usr/local && \
                     make install && \ 
                     wget -qO- https://www.npmjs.org/install.sh | sh && \
-                    npm install -g @quasar/cli && \
-                    apt install apt-file -y && \
-                    apt-file update && \
-                    apt-get install -y libcap2-bin --no-install-recommends  && \
                     apt-get clean && \
-                   rm -rf /var/lib/apt/lists/* && \
-                    locale-gen en_US.UTF-8
+                   rm -rf /var/lib/apt/lists/*
 ADD . /tmp/yottadb-src
 RUN mkdir -p /tmp/yottadb-build \
  && cd /tmp/yottadb-build \
@@ -59,25 +54,32 @@ RUN mkdir -p /tmp/yottadb-build \
       /tmp/yottadb-src \
  && make -j $(nproc) \
  && make install
+# Stage 2: YottaDB release image
+FROM ubuntu:${OS_VSN} as ydb-release
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && \
+    apt-get install -y \
+                    file \
+                    binutils \
+                    libelf-dev \
+                    libicu-dev \
+                    locales \
+                    wget \
+                    vim \
+                    && \
+    apt-get clean
+RUN locale-gen en_US.UTF-8
 WORKDIR /data
-COPY --from=ydb-release-builder /tmp/yottadb-release /tmp/yottadb-release
+#COPY --from=ydb-release-builder /tmp/yottadb-release /tmp/yottadb-release
 RUN cd /tmp/yottadb-release  \
  && pkg-config --modversion icu-io \
       > /tmp/yottadb-release/.icu.vsn \
  && ./ydbinstall \
       --utf8 `cat /tmp/yottadb-release/.icu.vsn` \
       --installdir /opt/yottadb/current \
-      --force-install \
- && rm -rf /tmp/yottadb-release \
- && setcap 'cap_ipc_lock+ep' /opt/yottadb/current/ydb  \
- &&    echo gid >/proc/sys/vm/hugetlb_shm_group
-
+ && rm -rf /tmp/yottadb-release
 ENV gtmdir=/data \
     LANG=en_US.UTF-8 \
     LANGUAGE=en_US:en \
-    LC_ALL=en_US.UTF-8 \
-    HUGETLB_SHM=yes \
-    HUGETLB_MORECORE=yes \
-    LD_PRELOAD=libhugetlbfs.so \
-    HUGETLB_VERBOSE=0 
+    LC_ALL=en_US.UTF-8
 ENTRYPOINT ["/opt/yottadb/current/ydb"]
